@@ -18,7 +18,7 @@ const AddCube = ({ onAddCube }) => {
       toast.success('Cube added successfully!');
     } catch (error) {
       console.error('Error adding cube:', error);
-      toast.error('Failed to add cube. Please try again.');
+      toast.error(error.message || 'Failed to add cube. Please try again.');
     } finally {
       setIsLoading(false);
     }
