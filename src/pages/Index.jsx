@@ -21,7 +21,6 @@ const Index = () => {
 
   const sortCubes = (option) => {
     setSortOption(option);
-    // Sorting logic will be implemented in the CubeList component
   };
 
   return (
@@ -31,8 +30,10 @@ const Index = () => {
         <p className="text-xl text-gray-600">Track and manage your speedcube collection</p>
       </header>
       <main>
-        <AddCube onAddCube={addCube} />
-        <SortCubes onSort={sortCubes} />
+        <div className="flex justify-between items-center mb-8">
+          <AddCube onAddCube={addCube} />
+          <SortCubes onSort={sortCubes} />
+        </div>
         <CubeList 
           cubes={cubes} 
           onEditCube={editCube} 
