@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { parse } from 'node-html-parser';
 
 const fetchCubeDetails = async (url) => {
   try {
@@ -7,24 +8,23 @@ const fetchCubeDetails = async (url) => {
     const response = await axios.get(corsProxy + encodeURIComponent(url));
     const html = response.data;
 
-    // Parse the HTML content
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
+    // Parse the HTML content using node-html-parser
+    const root = parse(html);
 
     let name, price, image, size, features;
 
     if (url.includes('speedcubeshop.com')) {
-      name = doc.querySelector('h1.product-single__title')?.textContent.trim();
-      price = doc.querySelector('span.price-item--regular')?.textContent.trim().replace('$', '');
-      image = doc.querySelector('img.product-featured-media')?.src;
+      name = root.querySelector('h1.product-single__title')?.textContent.trim();
+      price = root.querySelector('span.price-item--regular')?.textContent.trim().replace('$', '');
+      image = root.querySelector('img.product-featured-media')?.getAttribute('src');
       size = extractSize(name);
-      features = extractFeatures(doc.querySelector('.product-single__description')?.textContent);
+      features = extractFeatures(root.querySelector('.product-single__description')?.textContent);
     } else if (url.includes('thecubicle.com')) {
-      name = doc.querySelector('h1.product-title')?.textContent.trim();
-      price = doc.querySelector('span.price')?.textContent.trim().replace('$', '');
-      image = doc.querySelector('img.product-image')?.src;
+      name = root.querySelector('h1.product-title')?.textContent.trim();
+      price = root.querySelector('span.price')?.textContent.trim().replace('$', '');
+      image = root.querySelector('img.product-image')?.getAttribute('src');
       size = extractSize(name);
-      features = extractFeatures(doc.querySelector('.product-description')?.textContent);
+      features = extractFeatures(root.querySelector('.product-description')?.textContent);
     } else {
       throw new Error('Unsupported website');
     }
