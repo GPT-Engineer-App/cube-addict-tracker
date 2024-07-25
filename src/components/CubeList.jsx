@@ -9,7 +9,7 @@ const CubeList = ({ cubes, onEditCube, onDeleteCube, sortOption }) => {
   const sortedCubes = [...cubes].sort((a, b) => {
     if (sortOption === 'name') return a.name.localeCompare(b.name);
     if (sortOption === 'price') return a.price - b.price;
-    if (sortOption === 'size') return a.size.localeCompare(b.size);
+    if (sortOption === 'type') return a.type.localeCompare(b.type);
     return 0;
   });
 
@@ -23,7 +23,8 @@ const CubeList = ({ cubes, onEditCube, onDeleteCube, sortOption }) => {
           <CardContent>
             <img src={cube.image} alt={cube.name} className="w-full h-48 object-cover mb-4" />
             <p>Price: ${cube.price}</p>
-            <p>Size: {cube.size}</p>
+            <p>Type: {cube.type}</p>
+            <p>Size: {cube.size} mm</p>
             <p>Features: {cube.features.join(', ')}</p>
           </CardContent>
           <CardFooter className="flex justify-between">

@@ -10,7 +10,7 @@ const SortCubes = ({ onSort }) => {
         <SelectContent>
           <SelectItem value="name">Name</SelectItem>
           <SelectItem value="price">Price</SelectItem>
-          <SelectItem value="size">Size</SelectItem>
+          <SelectItem value="type">Type</SelectItem>
         </SelectContent>
       </Select>
     </div>

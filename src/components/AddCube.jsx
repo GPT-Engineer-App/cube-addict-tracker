@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ const AddCube = ({ onAddCube }) => {
     name: '',
     price: '',
     image: '',
+    type: '',
     size: '',
     features: []
   });
@@ -22,25 +23,52 @@ const AddCube = ({ onAddCube }) => {
   };
 
   const handleCheckboxChange = (feature) => {
-    setCubeDetails(prev => ({
-      ...prev,
-      features: prev.features.includes(feature)
-        ? prev.features.filter(f => f !== feature)
-        : [...prev.features, feature]
-    }));
+    setCubeDetails(prev => {
+      let newFeatures = [...prev.features];
+      if (feature === 'Core to Corner Magnets') {
+        newFeatures = newFeatures.filter(f => f !== 'Magnets');
+        if (!newFeatures.includes(feature)) {
+          newFeatures.push(feature);
+        } else {
+          newFeatures = newFeatures.filter(f => f !== feature);
+        }
+      } else if (feature === 'Magnets' && newFeatures.includes('Core to Corner Magnets')) {
+        return prev;
+      } else {
+        if (newFeatures.includes(feature)) {
+          newFeatures = newFeatures.filter(f => f !== feature);
+        } else {
+          newFeatures.push(feature);
+        }
+      }
+      return { ...prev, features: newFeatures };
+    });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!cubeDetails.name || !cubeDetails.price) {
-      toast.error('Name and price are required');
+    if (!cubeDetails.name || !cubeDetails.price || !cubeDetails.type) {
+      toast.error('Name, price, and cube type are required');
       return;
     }
     onAddCube({ ...cubeDetails, id: Date.now(), price: parseFloat(cubeDetails.price) });
     setIsOpen(false);
-    setCubeDetails({ name: '', price: '', image: '', size: '', features: [] });
+    setCubeDetails({ name: '', price: '', image: '', type: '', size: '', features: [] });
     toast.success('Cube added successfully!');
   };
+
+  const features = [
+    'Core to Corner Magnets',
+    'Magnets',
+    'Stickerless',
+    'Frosted Plastic',
+    'Adjustable Magnets',
+    'Dual Adjustment System',
+    'Ridged Edges',
+    'Corner-Core Magnets',
+    'Maglev',
+    'UV Coated'
+  ];
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -65,13 +93,17 @@ const AddCube = ({ onAddCube }) => {
             <Input id="image" name="image" value={cubeDetails.image} onChange={handleInputChange} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="size">Size</Label>
-            <Input id="size" name="size" value={cubeDetails.size} onChange={handleInputChange} />
+            <Label htmlFor="type">Cube Type</Label>
+            <Input id="type" name="type" value={cubeDetails.type} onChange={handleInputChange} placeholder="e.g., 3x3, 4x4" required />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="size">Size (mm)</Label>
+            <Input id="size" name="size" value={cubeDetails.size} onChange={handleInputChange} placeholder="e.g., 56" />
           </div>
           <div className="space-y-2">
             <Label>Features</Label>
             <div className="space-y-2">
-              {['Maglev', 'Core to Corner Magnets', 'Magnets'].map((feature) => (
+              {features.map((feature) => (
                 <div key={feature} className="flex items-center space-x-2">
                   <Checkbox
                     id={feature}

@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const CubeEditModal = ({ cube, onSave, onClose }) => {
   const [editedCube, setEditedCube] = useState({ ...cube });
@@ -11,10 +13,46 @@ const CubeEditModal = ({ cube, onSave, onClose }) => {
     setEditedCube(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCheckboxChange = (feature) => {
+    setEditedCube(prev => {
+      let newFeatures = [...prev.features];
+      if (feature === 'Core to Corner Magnets') {
+        newFeatures = newFeatures.filter(f => f !== 'Magnets');
+        if (!newFeatures.includes(feature)) {
+          newFeatures.push(feature);
+        } else {
+          newFeatures = newFeatures.filter(f => f !== feature);
+        }
+      } else if (feature === 'Magnets' && newFeatures.includes('Core to Corner Magnets')) {
+        return prev;
+      } else {
+        if (newFeatures.includes(feature)) {
+          newFeatures = newFeatures.filter(f => f !== feature);
+        } else {
+          newFeatures.push(feature);
+        }
+      }
+      return { ...prev, features: newFeatures };
+    });
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(editedCube);
   };
+
+  const features = [
+    'Core to Corner Magnets',
+    'Magnets',
+    'Stickerless',
+    'Frosted Plastic',
+    'Adjustable Magnets',
+    'Dual Adjustment System',
+    'Ridged Edges',
+    'Corner-Core Magnets',
+    'Maglev',
+    'UV Coated'
+  ];
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
@@ -25,20 +63,35 @@ const CubeEditModal = ({ cube, onSave, onClose }) => {
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="name" className="text-right">Name</label>
+              <Label htmlFor="name" className="text-right">Name</Label>
               <Input id="name" name="name" value={editedCube.name} onChange={handleChange} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="price" className="text-right">Price</label>
+              <Label htmlFor="price" className="text-right">Price</Label>
               <Input id="price" name="price" type="number" value={editedCube.price} onChange={handleChange} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="size" className="text-right">Size</label>
+              <Label htmlFor="type" className="text-right">Type</Label>
+              <Input id="type" name="type" value={editedCube.type} onChange={handleChange} className="col-span-3" />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="size" className="text-right">Size (mm)</Label>
               <Input id="size" name="size" value={editedCube.size} onChange={handleChange} className="col-span-3" />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="features" className="text-right">Features</label>
-              <Input id="features" name="features" value={editedCube.features.join(', ')} onChange={(e) => setEditedCube(prev => ({ ...prev, features: e.target.value.split(', ') }))} className="col-span-3" />
+              <Label className="text-right">Features</Label>
+              <div className="col-span-3 space-y-2">
+                {features.map((feature) => (
+                  <div key={feature} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={feature}
+                      checked={editedCube.features.includes(feature)}
+                      onCheckedChange={() => handleCheckboxChange(feature)}
+                    />
+                    <Label htmlFor={feature}>{feature}</Label>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
           <DialogFooter>
