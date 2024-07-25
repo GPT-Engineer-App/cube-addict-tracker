@@ -1,12 +1,45 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import AddCube from '../components/AddCube';
+import CubeList from '../components/CubeList';
+import SortCubes from '../components/SortCubes';
 
 const Index = () => {
+  const [cubes, setCubes] = useState([]);
+  const [sortOption, setSortOption] = useState('name');
+
+  const addCube = (newCube) => {
+    setCubes([...cubes, newCube]);
+  };
+
+  const editCube = (id, updatedCube) => {
+    setCubes(cubes.map(cube => cube.id === id ? updatedCube : cube));
+  };
+
+  const deleteCube = (id) => {
+    setCubes(cubes.filter(cube => cube.id !== id));
+  };
+
+  const sortCubes = (option) => {
+    setSortOption(option);
+    // Sorting logic will be implemented in the CubeList component
+  };
+
   return (
-    <div className="flex justify-center items-center">
-      <div className="text-center">
-        <h1 className="text-3xl">Your Blank Canvas</h1>
-        <p>Chat with the agent to start making edits.</p>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <header className="text-center mb-8">
+        <h1 className="text-4xl font-bold mb-2">Speedcube Wishlist</h1>
+        <p className="text-xl text-gray-600">Track and manage your speedcube collection</p>
+      </header>
+      <main>
+        <AddCube onAddCube={addCube} />
+        <SortCubes onSort={sortCubes} />
+        <CubeList 
+          cubes={cubes} 
+          onEditCube={editCube} 
+          onDeleteCube={deleteCube} 
+          sortOption={sortOption}
+        />
+      </main>
     </div>
   );
 };
