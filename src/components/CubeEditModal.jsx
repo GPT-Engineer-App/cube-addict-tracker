@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
 const CubeEditModal = ({ cube, onSave, onClose }) => {
@@ -13,7 +13,7 @@ const CubeEditModal = ({ cube, onSave, onClose }) => {
     setEditedCube(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (feature) => {
+  const handleToggleChange = (feature) => {
     setEditedCube(prev => {
       let newFeatures = [...prev.features];
       if (feature === 'Core to Corner Magnets') {
@@ -82,13 +82,13 @@ const CubeEditModal = ({ cube, onSave, onClose }) => {
               <Label className="text-right">Features</Label>
               <div className="col-span-3 space-y-2">
                 {features.map((feature) => (
-                  <div key={feature} className="flex items-center space-x-2">
-                    <Checkbox
+                  <div key={feature} className="flex items-center justify-between">
+                    <Label htmlFor={feature} className="flex-grow">{feature}</Label>
+                    <Switch
                       id={feature}
                       checked={editedCube.features.includes(feature)}
-                      onCheckedChange={() => handleCheckboxChange(feature)}
+                      onCheckedChange={() => handleToggleChange(feature)}
                     />
-                    <Label htmlFor={feature}>{feature}</Label>
                   </div>
                 ))}
               </div>

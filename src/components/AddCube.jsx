@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
 
 const AddCube = ({ onAddCube }) => {
@@ -22,7 +22,7 @@ const AddCube = ({ onAddCube }) => {
     setCubeDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleCheckboxChange = (feature) => {
+  const handleToggleChange = (feature) => {
     setCubeDetails(prev => {
       let newFeatures = [...prev.features];
       if (feature === 'Core to Corner Magnets') {
@@ -104,13 +104,13 @@ const AddCube = ({ onAddCube }) => {
             <Label>Features</Label>
             <div className="space-y-2">
               {features.map((feature) => (
-                <div key={feature} className="flex items-center space-x-2">
-                  <Checkbox
+                <div key={feature} className="flex items-center justify-between">
+                  <Label htmlFor={feature} className="flex-grow">{feature}</Label>
+                  <Switch
                     id={feature}
                     checked={cubeDetails.features.includes(feature)}
-                    onCheckedChange={() => handleCheckboxChange(feature)}
+                    onCheckedChange={() => handleToggleChange(feature)}
                   />
-                  <Label htmlFor={feature}>{feature}</Label>
                 </div>
               ))}
             </div>
