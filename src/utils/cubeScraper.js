@@ -33,6 +33,12 @@ const fetchCubeDetails = async (url) => {
       throw new Error('Failed to extract cube details');
     }
 
+    // Ensure the image URL is absolute
+    if (image && !image.startsWith('http')) {
+      const urlObj = new URL(url);
+      image = `${urlObj.protocol}//${urlObj.hostname}${image}`;
+    }
+
     return {
       id: Date.now(),
       name,
