@@ -1,29 +1,27 @@
 import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { fetchCubeDetails } from '../utils/cubeScraper';
+import { toast } from "sonner";
 
 const AddCube = ({ onAddCube }) => {
   const [link, setLink] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement fetching cube details from the link
-    const cubeDetails = await fetchCubeDetails(link);
-    onAddCube(cubeDetails);
-    setLink('');
-  };
-
-  // Placeholder function for fetching cube details
-  const fetchCubeDetails = async (link) => {
-    // TODO: Implement actual fetching logic
-    return {
-      id: Date.now(),
-      name: 'Sample Cube',
-      price: 19.99,
-      image: '/placeholder.svg',
-      size: '3x3',
-      features: ['Magnetic', 'Stickerless']
-    };
+    setIsLoading(true);
+    try {
+      const cubeDetails = await fetchCubeDetails(link);
+      onAddCube(cubeDetails);
+      setLink('');
+      toast.success('Cube added successfully!');
+    } catch (error) {
+      console.error('Error adding cube:', error);
+      toast.error('Failed to add cube. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -36,7 +34,9 @@ const AddCube = ({ onAddCube }) => {
           placeholder="Paste speedcubeshop.com or thecubicle.com link"
           className="flex-grow"
         />
-        <Button type="submit">Add Cube</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Adding...' : 'Add Cube'}
+        </Button>
       </div>
     </form>
   );
