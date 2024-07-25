@@ -3,8 +3,8 @@ import axios from 'axios';
 const fetchCubeDetails = async (url) => {
   try {
     // Use a CORS proxy to bypass CORS restrictions
-    const corsProxy = 'https://cors-anywhere.herokuapp.com/';
-    const response = await axios.get(corsProxy + url);
+    const corsProxy = 'https://corsproxy.io/?';
+    const response = await axios.get(corsProxy + encodeURIComponent(url));
     const html = response.data;
 
     // Parse the HTML content
@@ -14,19 +14,23 @@ const fetchCubeDetails = async (url) => {
     let name, price, image, size, features;
 
     if (url.includes('speedcubeshop.com')) {
-      name = doc.querySelector('h1.product-single__title').textContent.trim();
-      price = doc.querySelector('span.price-item--regular').textContent.trim().replace('$', '');
-      image = doc.querySelector('img.product-featured-media').src;
+      name = doc.querySelector('h1.product-single__title')?.textContent.trim();
+      price = doc.querySelector('span.price-item--regular')?.textContent.trim().replace('$', '');
+      image = doc.querySelector('img.product-featured-media')?.src;
       size = extractSize(name);
-      features = extractFeatures(doc.querySelector('.product-single__description').textContent);
+      features = extractFeatures(doc.querySelector('.product-single__description')?.textContent);
     } else if (url.includes('thecubicle.com')) {
-      name = doc.querySelector('h1.product-title').textContent.trim();
-      price = doc.querySelector('span.price').textContent.trim().replace('$', '');
-      image = doc.querySelector('img.product-image').src;
+      name = doc.querySelector('h1.product-title')?.textContent.trim();
+      price = doc.querySelector('span.price')?.textContent.trim().replace('$', '');
+      image = doc.querySelector('img.product-image')?.src;
       size = extractSize(name);
-      features = extractFeatures(doc.querySelector('.product-description').textContent);
+      features = extractFeatures(doc.querySelector('.product-description')?.textContent);
     } else {
       throw new Error('Unsupported website');
+    }
+
+    if (!name || !price || !image) {
+      throw new Error('Failed to extract cube details');
     }
 
     return {
@@ -44,16 +48,16 @@ const fetchCubeDetails = async (url) => {
 };
 
 const extractSize = (name) => {
-  if (name.includes('2x2')) return '2x2';
-  if (name.includes('3x3')) return '3x3';
-  if (name.includes('4x4')) return '4x4';
-  if (name.includes('5x5')) return '5x5';
-  if (name.includes('6x6')) return '6x6';
-  if (name.includes('7x7')) return '7x7';
+  if (!name) return 'Unknown';
+  const sizes = ['2x2', '3x3', '4x4', '5x5', '6x6', '7x7'];
+  for (const size of sizes) {
+    if (name.toLowerCase().includes(size)) return size;
+  }
   return 'Unknown';
 };
 
 const extractFeatures = (description) => {
+  if (!description) return [];
   const features = [];
   const lowerDesc = description.toLowerCase();
   if (lowerDesc.includes('maglev')) features.push('Maglev');
